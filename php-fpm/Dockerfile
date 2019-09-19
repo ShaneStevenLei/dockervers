@@ -24,8 +24,10 @@ RUN sed -i "s/xdebug.remote_autostart=0/xdebug.remote_autostart=1/" /usr/local/e
     sed -i "s/xdebug.remote_enable=0/xdebug.remote_enable=1/" /usr/local/etc/php/conf.d/xdebug.ini && \
     sed -i "s/xdebug.cli_color=0/xdebug.cli_color=1/" /usr/local/etc/php/conf.d/xdebug.ini
 
-
-RUN apk --no-cache add autoconf g++ make \
+RUN apk --no-cache add autoconf g++ make libzip-dev zip unzip \
+    && docker-php-ext-configure zip --with-libzip \
+    && docker-php-ext-install zip \
+    && php -m | grep -q 'zip' \
     # Install the xdebug extension
     && if [ ${INSTALL_XDEBUG} = true ]; then \
         if [ $(php -r "echo PHP_MAJOR_VERSION;") = "5" ]; then \
