@@ -15,6 +15,16 @@ ARG INSTALL_EXIF=false
 ARG INSTALL_XSL=false
 ARG INSTALL_SWOOLE=false
 ARG INSTALL_XHPROF=false
+ARG INSTALL_COMPOSER=false
+ARG COMPOSER_REPO_PACKAGIST
+ENV COMPOSER_REPO_PACKAGIST ${COMPOSER_REPO_PACKAGIST}
+ARG INSTALL_NODE=false
+ARG NPM_REGISTRY
+ENV NPM_REGISTRY ${NPM_REGISTRY}
+ARG INSTALL_NPM_GULP=false
+ARG INSTALL_NPM_BOWER=false
+ARG INSTALL_NPM_VUE_CLI=false
+ARG INSTALL_NPM_ANGULAR_CLI=false
 
 
 # Copy xdebug configuration for remote debugging
@@ -125,7 +135,45 @@ RUN apk --no-cache add autoconf g++ make libzip-dev zip unzip \
         ) \
         && rm -r xhprof \
         && rm /tmp/xhprof.tar.gz \
+    ;fi \
+    && if [ ${INSTALL_NODE} = true ]; then \
+        apk --no-cache add nodejs-npm \
+        && if [ ${NPM_REGISTRY} ]; then \
+            npm config set registry ${NPM_REGISTRY} \
+        ;fi \
+        && if [ ${INSTALL_NPM_GULP} = true ]; then \
+            npm install -g gulp \
+        ;fi \
+        && if [ ${INSTALL_NPM_BOWER} = true ]; then \
+            npm install -g bower \
+        ;fi \
+        && if [ ${INSTALL_NPM_VUE_CLI} = true ]; then \
+            npm install -g @vue/cli \
+        ;fi \
+        && if [ ${INSTALL_NPM_ANGULAR_CLI} = true ]; then \
+            npm install -g @angular/cli \
+        ;fi \
     ;fi
+
+
+USER root
+
+# Install composer
+RUN if [ ${INSTALL_COMPOSER} = true ]; then \
+        curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
+        && chmod +x /usr/local/bin/composer \
+    ;fi
+
+USER www-data
+
+RUN if [ ${INSTALL_COMPOSER} = true ]; then \
+        if [ ${COMPOSER_REPO_PACKAGIST} ]; then \
+            composer config -g repo.packagist composer ${COMPOSER_REPO_PACKAGIST} \
+        ;fi \
+    fi \
+    && composer global require "hirak/prestissimo" -vvv
+
+USER root
 
 RUN rm -rf /var/cache/apk/*
 
