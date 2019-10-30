@@ -26,14 +26,6 @@ ARG INSTALL_NPM_BOWER=false
 ARG INSTALL_NPM_VUE_CLI=false
 ARG INSTALL_NPM_ANGULAR_CLI=false
 
-
-# Copy xdebug configuration for remote debugging
-COPY ./config/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
-
-RUN sed -i "s/xdebug.remote_autostart=0/xdebug.remote_autostart=1/" /usr/local/etc/php/conf.d/xdebug.ini && \
-    sed -i "s/xdebug.remote_enable=0/xdebug.remote_enable=1/" /usr/local/etc/php/conf.d/xdebug.ini && \
-    sed -i "s/xdebug.cli_color=0/xdebug.cli_color=1/" /usr/local/etc/php/conf.d/xdebug.ini
-
 RUN apk --no-cache add autoconf g++ make libzip-dev zip unzip \
     && docker-php-ext-configure zip --with-libzip \
     && docker-php-ext-install zip \

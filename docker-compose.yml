@@ -55,7 +55,11 @@ services:
       hostname: php-fpm
       volumes:
         - ./php-fpm/config/php${PHP_VERSION}.ini:/usr/local/etc/php/php.ini
+        - ${PHP_FPM_DEBUG_PATH_HOST}:/usr/local/etc/php/conf.d/xdebug.ini
         - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
+        - ${PHP_FPM_HOST_LOG_PATH}:/var/log/php-fpm
+      extra_hosts:
+        - "dockerhost:${DOCKER_HOST_IP}"
       expose:
         - "9000"
       networks:
