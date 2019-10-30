@@ -17,6 +17,9 @@ APP_CODE_PATH_HOST=
 
 # Choose storage path on your machine. For all storage systems
 DATA_PATH_HOST=
+
+# Docker host ip
+DOCKER_HOST_IP=
 ```
 
 - Run your container
