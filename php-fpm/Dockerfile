@@ -10,6 +10,7 @@ ARG INSTALL_MYSQLI=false
 ARG INSTALL_OPCACHE=false
 ARG INSTALL_PHPREDIS=false
 ARG INSTALL_MEMCACHED=false
+ARG INSTALL_PCNTL=false
 ARG INSTALL_APCU=false
 ARG INSTALL_EXIF=false
 ARG INSTALL_XSL=false
@@ -80,6 +81,11 @@ RUN apk --no-cache add autoconf g++ make libzip-dev zip unzip \
         && rm -r memcached \
         && rm /tmp/memcached.tar.gz \
         && docker-php-ext-enable memcached \
+    ;fi \
+    # Install the php pcntl extension
+    && if [ ${INSTALL_PCNTL} = true ]; then \
+        docker-php-ext-install pcntl && \
+        docker-php-ext-enable pcntl \
     ;fi \
     # Install the php apcu extension
     && if [ ${INSTALL_APCU} = true ]; then \
